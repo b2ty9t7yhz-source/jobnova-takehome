@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "jobUrl": "https://www.indeed.com/viewjob?jk=REPLACE_WITH_VERIFIED_JOB_ID",
+      "title": "Replace with a relevant role title",
+      "company": "Replace with the employer name",
+      "fitReason": "Replace with a candidate-reviewed explanation grounded in your own profile evidence."
+    }
+  ]
+}

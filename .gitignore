@@ -1,0 +1,30 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+*.tsbuildinfo
+
+# Local configuration and candidate data
+.env
+.env.*
+!.env.example
+**/profile.local.json
+**/job-plan.local.json
+**/candidate-profile.json
+**/*.resume.*
+
+# Authentication state and local workflow data
+runtime/
+/storage/
+screenshots/
+artifacts/
+work/
+*.db
+*.sqlite
+*.sqlite3
+
+# Editor files
+.idea/
+.vscode/
+*.swp

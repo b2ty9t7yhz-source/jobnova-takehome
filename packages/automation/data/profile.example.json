@@ -1,0 +1,32 @@
+{
+  "identity": {
+    "firstName": "Your first name",
+    "lastName": "Your last name",
+    "email": "you@example.com",
+    "phone": "+1 555 555 0100"
+  },
+  "location": {
+    "city": "Your city",
+    "state": "Your state",
+    "country": "United States"
+  },
+  "resumePath": "./resume.local.pdf",
+  "education": [
+    {
+      "school": "Your university",
+      "degree": "Bachelor of Science",
+      "field": "Your field",
+      "graduation": "2027-05"
+    }
+  ],
+  "experience": [],
+  "workPreferences": {
+    "targetRoles": ["Software Engineer"],
+    "locations": ["United States"],
+    "remote": true,
+    "employmentTypes": ["Full time", "Internship"]
+  },
+  "knownAnswers": {
+    "Example exact employer question": "An answer you personally verified"
+  }
+}
