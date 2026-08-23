@@ -7,7 +7,7 @@ This checklist maps the take-home requirements to reviewer-visible evidence. It 
 | Requirement | Status | Evidence |
 | --- | --- | --- |
 | Implement the recommendation job board | Complete | `packages/web/src/App.tsx`, reusable components, and deterministic fixtures |
-| Responsive mobile/H5 experience | Complete | Responsive CSS, mobile navigation, mobile filter and review sheets; list/detail/review verified at 390×844 without horizontal overflow |
+| Responsive mobile/H5 experience | Complete | Responsive CSS, mobile navigation, mobile filter and review sheets; real Playwright journey verifies list/detail/review at 390×844 without horizontal overflow |
 | Useful interaction extensions | Complete | Search, filters, saved-job persistence, detail navigation, keyboard shortcut, loading/empty states, and safe review preview |
 | Explain recommendations | Complete | Visible category evidence, deterministic weights, and a versioned recommendation receipt |
 
@@ -30,17 +30,15 @@ This checklist maps the take-home requirements to reviewer-visible evidence. It 
 
 ## Reproducible reviewer path
 
+Public frontend demo: <https://jobnova-jinhan-takehome.jessica2134.chatgpt.site>
+
 ```bash
-npm install
-npm run check
-npm run dev
-npm run demo:seed
-npm run demo:status
-npm run demo:session
-npm run demo:workflow
+npm ci
+npx playwright install chromium
+npm run reviewer:demo
 ```
 
-All demo commands are offline, do not read a private profile, and store synthetic evidence separately under `runtime/demo/`. The first three do not open a browser. `demo:session` proves authenticated encryption, ciphertext-only vault persistence, and correct restore. `demo:workflow` launches headless Chromium with every request intercepted locally, then proves end-to-end form progression to final review without submission.
+The reviewer command runs all static checks, 49 unit/component tests, 3 browser-backed automation tests, 2 frontend E2E journeys, all five statuses, encrypted session restore, and the safe workflow fixture. Demo commands are offline, do not read a private profile, and store synthetic evidence separately under `runtime/demo/`. `demo:session` proves authenticated encryption, ciphertext-only vault persistence, and correct restore. `demo:workflow` launches headless Chromium with every request intercepted locally, then proves end-to-end form progression to final review without submission.
 
 ## Safety and packaging audit
 
@@ -57,6 +55,7 @@ All demo commands are offline, do not read a private profile, and store syntheti
 - [x] The live workflow rejects placeholders and a missing/unreadable resume before opening a browser.
 - [x] The workflow revalidates the Indeed host on every application screen before filling profile data.
 - [x] Real Chromium tests cover native and ARIA fields, radio/checkbox answers, resume upload, and the final-review stop.
+- [x] Frontend Playwright E2E covers the desktop discovery-to-review journey and the 390×844 mobile journey; CI retains screenshots as an artifact.
 
 ## Intentionally not claimed
 

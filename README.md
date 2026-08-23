@@ -1,5 +1,11 @@
 # JobNova — Explainable Recommendations & Safe Apply
 
+[![CI](https://github.com/zhangjinhan-07/jobnova-takehome/actions/workflows/ci.yml/badge.svg)](https://github.com/zhangjinhan-07/jobnova-takehome/actions/workflows/ci.yml)
+
+[**Open the public frontend demo →**](https://jobnova-jinhan-takehome.jessica2134.chatgpt.site) · [Browse the source](https://github.com/zhangjinhan-07/jobnova-takehome) · [Download v1.0.0](https://github.com/zhangjinhan-07/jobnova-takehome/releases/tag/v1.0.0) · [Read the design decisions](./docs/DESIGN_DECISIONS.md)
+
+![JobNova explainable job matching preview](./packages/web/public/og.png)
+
 JobNova is a polished, production-minded take-home prototype that connects two parts of the job-search journey:
 
 1. an explainable job recommendation experience based on the supplied Figma direction; and
@@ -86,6 +92,8 @@ jobnova-takehome/
 
 ## Quick start
 
+Reviewers can use the public demo above without installing dependencies. The commands below reproduce the full local project, including tests and the private backend workflow.
+
 Requirements:
 
 - Node.js 22+
@@ -104,6 +112,12 @@ Run every local quality gate:
 
 ```bash
 npm run check
+```
+
+Or run the complete synthetic reviewer path, including backend browser tests, desktop/mobile frontend E2E, all five workflow statuses, encrypted session restore, and the final-review stop:
+
+```bash
+npm run reviewer:demo
 ```
 
 ## Zero-risk backend demo (recommended)
@@ -445,12 +459,15 @@ See [`WALKTHROUGH.md`](./WALKTHROUGH.md) for a concise recording script.
 
 See [`SUBMISSION_CHECKLIST.md`](./SUBMISSION_CHECKLIST.md) for a requirement-to-evidence audit and packaging boundaries.
 
+See [`docs/DESIGN_DECISIONS.md`](./docs/DESIGN_DECISIONS.md) for the concise trade-off, trust-boundary, failure-policy, and multi-user extension record.
+
 ## Validation status
 
 The repository is locally validated with:
 
 - frontend strict TypeScript;
 - frontend component and recommendation tests;
+- desktop and 390×844 mobile Playwright E2E journeys with CI-uploaded screenshots;
 - frontend production build;
 - backend strict TypeScript;
 - backend state-machine, persistence, answer-policy, verification, and profile-schema tests;
@@ -462,7 +479,7 @@ The repository is locally validated with:
 - ESLint across both workspaces;
 - read-only CLI smoke checks (`profile:validate`, `status`).
 
-The current validation set contains 49 default unit/component tests plus 3 browser-backed tests. The zero-risk synthetic path is the reproducible reviewer evidence. Separately, one candidate-controlled application to a relevant software-engineering internship was submitted on 2026-08-23 and reconciled into the ignored private runtime store only after confirmation on Indeed and in the candidate's email. Account details, resume data, application identifiers, and confirmation evidence are intentionally excluded from the repository and recording.
+The current validation set contains 49 default unit/component tests, 3 browser-backed automation tests, and 2 frontend Playwright E2E journeys. The zero-risk synthetic path is the reproducible reviewer evidence. Separately, one candidate-controlled application to a relevant software-engineering internship was submitted on 2026-08-23 and reconciled into the ignored private runtime store only after confirmation on Indeed and in the candidate's email. Account details, resume data, application identifiers, and confirmation evidence are intentionally excluded from the repository and recording.
 
 ## Scope limitations
 

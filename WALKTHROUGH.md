@@ -1,67 +1,71 @@
 # JobNova Walkthrough Script
 
-This 4–5 minute walkthrough demonstrates the product and backend architecture without exposing a private Indeed session or sending another application.
+This 4–5 minute walkthrough is ordered for a hiring reviewer: product value first, one distinctive design decision, reproducible engineering evidence, and a concise safety close. It exposes no private Indeed session and sends no application.
 
-## 1. Product overview — 20 seconds
+## Recording safety preflight
 
-“JobNova connects explainable job discovery with a safe, resumable application workflow. The prototype is intentionally review-first: it never guesses sensitive answers, bypasses verification, or submits from the product demo.”
+- Use the public demo and this repository only; close Indeed, email, resume, and private runtime tabs.
+- Hide browser bookmarks, notifications, terminal history, and unrelated tabs.
+- Keep `runtime/`, `.env`, local profiles, session files, screenshots, phone numbers, and application IDs off screen.
+- Record at 1440×900 or higher with browser zoom at 100%; use a readable terminal font.
+- Rehearse once and keep the final video between 4:00 and 5:00.
 
-## 2. Recommendation experience — 90 seconds
+## 1. Public product hook — 20 seconds
 
-1. Run `npm run dev` and open `http://127.0.0.1:4173`.
-2. Point out the recommendation cards, transparent match score, and visible evidence.
-3. Search for `research software`.
-4. Open Filters, choose a work mode, and adjust the minimum match.
-5. Save a role and switch to the Saved tab. Refresh once to show that the shortlist persists locally.
-6. Open a job detail and explain the weighted match breakdown.
-7. Expand **Recommendation receipt**. Show the versioned profile, policy, job ID, and evidence IDs, and explain that the ranking is deterministic and local.
-8. Click **Review application**. Show that the local checklist contains no submit action and makes the safety boundary explicit.
-9. Press `Escape` to close the dialog, then press `Cmd/Ctrl + K` to focus search.
+Open <https://jobnova-jinhan-takehome.jessica2134.chatgpt.site> immediately—do not begin on a slide or terminal.
 
-## 3. Responsive layout — 30 seconds
+“JobNova connects explainable job discovery with a safe, resumable application workflow. I designed it to make both recommendation evidence and human checkpoints visible.”
+
+## 2. Recommendation and personal design signature — 80 seconds
+
+1. Point out the recommendation cards, transparent match score, and illustrative-data disclosure.
+2. Search for `research software`, filter to Hybrid, and save the role.
+3. Open its details and expand **Recommendation receipt**.
+4. Show the profile version, policy version, job ID, and evidence IDs: “This receipt is my personal design choice. A reviewer can reproduce why the recommendation appeared instead of trusting a black-box label.”
+5. Click **Review application** and show the four safe workflow steps plus the explicit disabled-submission note.
+6. Press `Escape`, then `Cmd/Ctrl + K` to briefly demonstrate keyboard behavior.
+
+## 3. Responsive layout — 25 seconds
 
 Switch to a 390px-wide viewport. Show the condensed search controls, stacked cards, bottom navigation, full-width detail flow, and mobile review sheet.
 
-## 4. Backend lifecycle demo — 75 seconds
+## 4. Reproducible engineering proof — 85 seconds
 
-Run:
+Run one command:
 
 ```bash
-npm run demo:seed
-npm run demo:status
-npm run demo:session
-npm run demo:workflow
+npm run reviewer:demo
 ```
 
-Explain that these commands:
+Do not read every log line. Let the recording show the command, then cut or accelerate to the final PASS summary. Explain that it:
 
-- keep the first three commands fully browser-free and offline;
-- do not read a candidate profile;
-- use an isolated `runtime/demo/applications.json` repository;
-- create five synthetic records covering `pending`, `in_progress`, `manual_action_required`, `failed`, and `submitted`;
-- label every record with `source: "demo"` so a fixture cannot be mistaken for a live outcome.
+- runs TypeScript, lint, 49 unit/component tests, production builds, 3 browser-backed automation tests, and 2 frontend Playwright E2E journeys;
+- creates all five required statuses using synthetic records labeled `source: "demo"`;
+- proves the encrypted Session Vault restores the original state while storing no plaintext cookie;
+- runs the production workflow against locally intercepted synthetic pages;
+- reaches final review with exact answers and a synthetic resume while sending zero submit requests.
 
-Then point out the two `PASS` checks from `demo:session`: the synthetic browser state was restored exactly, and the plaintext cookie never appeared in the Session Vault file.
+End this segment on the seven-line `Reviewer evidence summary`, not on a long log.
 
-Explain that `demo:workflow` launches real headless Chromium but intercepts every request locally. It exercises the production workflow and field filler against synthetic Indeed/Smart Apply pages, including contact fields, state/country, exact radio/checkbox answers, and resume attachment. Point out the four `PASS` checks, six persisted transitions, final-review checkpoint, and `Submit requests sent: 0`.
+## 5. Architecture and trade-offs — 55 seconds
 
-Open the `manual_action_required` record and point out the synthetic CAPTCHA reason. Open the failed record and show its step, timestamp, URL, and recovery context.
+Open `docs/DESIGN_DECISIONS.md` and explain only three rows:
 
-## 5. Architecture and safety — 60 seconds
+- deterministic scoring makes recommendation evidence reproducible; an LLM is not forced into the ranking path;
+- CAPTCHA and unknown questions persist `manual_action_required` instead of being bypassed or guessed;
+- session state is encrypted in the client, while multi-user scale replaces adapters rather than the domain state machine.
 
-Use the README diagrams to explain:
+## 6. Evidence close — 15 seconds
 
-- `BrowserManager` restores a saved Playwright storage state only when a live workflow is explicitly started;
-- the session adapter can use an owner-only local file or the included tenant-scoped HTTPS Session Vault with client-side AES-256-GCM encryption, tamper authentication, atomic ciphertext persistence, and revocation;
-- `ApplicationRepository` atomically persists state and transition history;
-- a bounded job plan accepts only one to three candidate-reviewed Indeed roles with written fit reasons;
-- `AnswerPolicy` fills only ordinary profile fields and exact candidate-verified answers;
-- the strict live-profile preflight rejects placeholders and a missing/unreadable resume before opening Indeed;
-- the workflow rechecks the Indeed host on every screen before transmitting profile data;
-- verification, unknown required questions, external ATS redirects, and final review become `manual_action_required`;
-- duplicate protection is based on a normalized Indeed job key;
-- a production multi-user version would replace local stores with tenant-scoped encrypted storage and workers while keeping the domain state machine.
+Show the GitHub Actions green check and the public URL.
 
-## 6. Close — 15 seconds
+“The result is a public, responsive product plus a reusable and observable workflow module. The reviewer path is deterministic, synthetic, privacy-safe, and ends with zero submission requests.”
 
-“The frontend demonstrates JobNova’s explainable, reproducible product experience. The backend demonstrates a reusable, observable state machine plus a tenant-scoped encrypted Session Vault, bounded role selection, strict data boundaries, and explicit human checkpoints. The recording uses only synthetic data, reaches final review through the production workflow, and proves that no demo submission request was sent. One candidate-controlled relevant live application was separately confirmed, while its private evidence remains outside the repository and video.”
+## Final video audit
+
+- [ ] The first frame is the public product, not setup instructions.
+- [ ] Recommendation receipt and review checkpoint are both visible.
+- [ ] The seven-line reviewer PASS summary is readable.
+- [ ] GitHub Actions green status is visible near the end.
+- [ ] No real Indeed, email, CAPTCHA, resume, phone number, cookie, session file, or application identifier appears.
+- [ ] Duration is 4–5 minutes and the shared link opens without requesting editor access.

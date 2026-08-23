@@ -14,10 +14,12 @@
     "demo:status": "npm run cli -- demo:status",
     "demo:session": "npm run cli -- demo:session",
     "demo:workflow": "npm run cli -- demo:workflow",
+    "reviewer:demo": "node scripts/reviewer-demo.mjs",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint .",
     "test": "npm run test --workspaces --if-present",
     "test:browser": "npm run test:browser --workspace @jobnova/automation",
+    "test:e2e:web": "playwright test --config playwright.web.config.ts",
     "build": "npm run build --workspaces --if-present",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build"
   },
@@ -25,7 +27,9 @@
     "node": ">=22.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "@eslint/js": "10.0.1",
+    "@playwright/test": "^1.62.1",
     "eslint": "10.8.1",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.4",

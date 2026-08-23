@@ -6,9 +6,9 @@ This audit was rebuilt from the supplied two-page challenge document. It separat
 
 | Challenge requirement | Evidence | Audit result |
 | --- | --- | --- |
-| Implement the Figma job board and recommendation page | `packages/web/src/App.tsx`, component library, job/detail/match layouts | Complete; visually compared with the supplied Figma and rechecked at 1440×1000 |
+| Implement the Figma job board and recommendation page | `packages/web/src/App.tsx`, component library, job/detail/match layouts, desktop Playwright E2E, [public demo](https://jobnova-jinhan-takehome.jessica2134.chatgpt.site) | Complete; visually compared with the supplied Figma and rechecked at 1440×1000 |
 | Finish within an estimated one day | Focused two-workspace vertical slice and 4–5 minute walkthrough | Design target supported; no unverifiable elapsed-time claim |
-| Make a responsive mobile H5 view without a supplied mobile design | Responsive CSS, `MobileNav`, mobile sheets, 390×844 list/detail/review checks | Complete; no horizontal overflow observed |
+| Make a responsive mobile H5 view without a supplied mobile design | Responsive CSS, `MobileNav`, mobile sheets, 390×844 Playwright list/detail/review journey | Complete; no horizontal overflow observed |
 | Add useful interactions where appropriate | Search, filters, shortlist persistence, detail view, review sheet, loading/empty states, `Cmd/Ctrl+K` | Complete |
 
 ## Backend
