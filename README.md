@@ -1,8 +1,8 @@
 # JobNova — Explainable Recommendations & Safe Apply
 
-[![CI](https://github.com/zhangjinhan-07/jobnova-takehome/actions/workflows/ci.yml/badge.svg)](https://github.com/zhangjinhan-07/jobnova-takehome/actions/workflows/ci.yml)
+[![CI](https://github.com/b2ty9t7yhz-source/jobnova-takehome/actions/workflows/ci.yml/badge.svg)](https://github.com/b2ty9t7yhz-source/jobnova-takehome/actions/workflows/ci.yml)
 
-[**Open the public frontend demo →**](https://jobnova-jinhan-takehome.jessica2134.chatgpt.site) · [Browse the source](https://github.com/zhangjinhan-07/jobnova-takehome) · [Download v1.0.0](https://github.com/zhangjinhan-07/jobnova-takehome/releases/tag/v1.0.0) · [Read the design decisions](./docs/DESIGN_DECISIONS.md)
+[**Open the public frontend demo →**](https://jobnova-jinhan-takehome.jessica2134.chatgpt.site) · [Browse the source](https://github.com/b2ty9t7yhz-source/jobnova-takehome) · [Download v1.0.0](https://github.com/b2ty9t7yhz-source/jobnova-takehome/releases/tag/v1.0.0) · [Read the design decisions](./docs/DESIGN_DECISIONS.md)
 
 ![JobNova explainable job matching preview](./packages/web/public/og.png)
 
