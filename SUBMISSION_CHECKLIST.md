@@ -8,7 +8,7 @@ This checklist maps the take-home requirements to reviewer-visible evidence. It 
 | --- | --- | --- |
 | Implement the recommendation job board | Complete | `packages/web/src/App.tsx`, reusable components, and deterministic fixtures |
 | Responsive mobile/H5 experience | Complete | Responsive CSS, mobile navigation, mobile filter and review sheets; real Playwright journey verifies list/detail/review at 390×844 without horizontal overflow |
-| Useful interaction extensions | Complete | Search, filters, saved-job persistence, detail navigation, keyboard shortcut, loading/empty states, and safe review preview |
+| Useful interaction extensions | Complete | Search, filters, saved-job persistence, detail navigation, keyboard shortcut, loading/empty states, and a connected D1-backed safe review timeline |
 | Explain recommendations | Complete | Visible category evidence, deterministic weights, and a versioned recommendation receipt |
 
 ## Backend requirements
@@ -38,7 +38,7 @@ npx playwright install chromium
 npm run reviewer:demo
 ```
 
-The reviewer command runs all static checks, 49 unit/component tests, 3 browser-backed automation tests, 2 frontend E2E journeys, all five statuses, encrypted session restore, and the safe workflow fixture. Demo commands are offline, do not read a private profile, and store synthetic evidence separately under `runtime/demo/`. `demo:session` proves authenticated encryption, ciphertext-only vault persistence, and correct restore. `demo:workflow` launches headless Chromium with every request intercepted locally, then proves end-to-end form progression to final review without submission.
+The reviewer command runs all static checks, 54 unit/component tests, 3 browser-backed automation tests, 2 frontend E2E journeys, all five statuses, encrypted session restore, and the safe workflow fixture. The frontend E2E journeys also exercise the same-origin synthetic API and its manual-action checkpoint. Demo commands do not read a private profile and store synthetic evidence separately under `runtime/demo/`. `demo:session` proves authenticated encryption, ciphertext-only vault persistence, and correct restore. `demo:workflow` launches headless Chromium with every request intercepted locally, then proves end-to-end form progression to final review without submission.
 
 ## Safety and packaging audit
 
@@ -47,6 +47,7 @@ The reviewer command runs all static checks, 49 unit/component tests, 3 browser-
 - [x] Only the placeholder `profile.example.json` is included.
 - [x] Synthetic records carry `source: "demo"` and cannot be presented as live applications.
 - [x] The frontend review panel contains no submission control.
+- [x] The public API accepts only fixture job IDs, stores no PII, expires D1 records after 24 hours, exposes no list route, and keeps `submitRequests` at zero.
 - [x] The walkthrough uses no live Indeed login, CAPTCHA, employer communication, or submission.
 - [x] Remote session envelopes contain ciphertext only; bearer token and encryption key stay in ignored environment configuration.
 - [x] The included Session Vault binds credentials to a tenant, rejects malformed envelopes, writes atomically with mode `0600`, and supports revocation.
@@ -55,7 +56,7 @@ The reviewer command runs all static checks, 49 unit/component tests, 3 browser-
 - [x] The live workflow rejects placeholders and a missing/unreadable resume before opening a browser.
 - [x] The workflow revalidates the Indeed host on every application screen before filling profile data.
 - [x] Real Chromium tests cover native and ARIA fields, radio/checkbox answers, resume upload, and the final-review stop.
-- [x] Frontend Playwright E2E covers the desktop discovery-to-review journey and the 390×844 mobile journey; CI retains screenshots as an artifact.
+- [x] Frontend Playwright E2E covers the desktop discovery-to-final-review journey and the 390×844 mobile journey through the manual-action pause; CI retains screenshots as an artifact.
 
 ## Intentionally not claimed
 

@@ -34,6 +34,17 @@ test("desktop discovery flow reaches the review checkpoint", async ({ page }) =>
   await expect(page.getByRole("dialog", { name: "Review-before-submit workflow" })).toBeVisible();
   await expect(page.getByText("Submission is disabled in this demo.")).toBeVisible();
 
+  await page.getByRole("button", { name: "Start safe demo" }).click();
+  await expect(page.getByText("Pending", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Begin profile check" }).click();
+  await expect(page.getByText("In progress", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Continue to verification gate" }).click();
+  await expect(page.getByText("Manual action required", { exact: true })).toBeVisible();
+  await expect(page.getByText(/does not solve a CAPTCHA/i)).toBeVisible();
+  await page.getByRole("button", { name: "Acknowledge simulated verification" }).click();
+  await expect(page.getByText("Final review reached", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Submit requests:/)).toContainText("0");
+
   await mkdir("artifacts/web-e2e", { recursive: true });
   await page.screenshot({
     path: "artifacts/web-e2e/desktop-review.png",

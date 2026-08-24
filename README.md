@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/b2ty9t7yhz-source/jobnova-takehome/actions/workflows/ci.yml/badge.svg)](https://github.com/b2ty9t7yhz-source/jobnova-takehome/actions/workflows/ci.yml)
 
-[**Open the public frontend demo →**](https://jobnova-jinhan-takehome.jessica2134.chatgpt.site) · [Browse the source](https://github.com/b2ty9t7yhz-source/jobnova-takehome) · [Download v1.0.0](https://github.com/b2ty9t7yhz-source/jobnova-takehome/releases/tag/v1.0.0) · [Read the design decisions](./docs/DESIGN_DECISIONS.md)
+[**Open the public safe demo →**](https://jobnova-jinhan-takehome.jessica2134.chatgpt.site) · [Browse the source](https://github.com/b2ty9t7yhz-source/jobnova-takehome) · [Download v1.1.0](https://github.com/b2ty9t7yhz-source/jobnova-takehome/releases/tag/v1.1.0) · [Read the design decisions](./docs/DESIGN_DECISIONS.md)
 
 ![JobNova explainable job matching preview](./packages/web/public/og.png)
 
@@ -39,6 +39,7 @@ Discover a role
 - **Bounded role selection:** a validated job plan contains one to three candidate-reviewed Indeed roles, each with a written fit reason.
 - **Duplicate protection:** normalized Indeed job IDs prevent accidental repeated applications.
 - **Evidence-backed quality:** strict TypeScript, ESLint, unit/integration-style component tests, and production builds.
+- **Connected, privacy-safe vertical slice:** the public review panel drives a same-origin Worker API and D1-backed workflow timeline using synthetic state only; the route can pause and resume but has no employer-submit capability.
 
 ## Architecture
 
@@ -46,6 +47,11 @@ Discover a role
 flowchart LR
   Candidate["Candidate"] --> Web["React recommendation experience"]
   Web --> Explain["Explainable match evidence"]
+  Web --> DemoAPI["Same-origin safe-demo API"]
+  DemoAPI --> DemoState["D1 synthetic workflow state · 24h TTL"]
+  DemoState --> DemoGate{"Verification gate?"}
+  DemoGate -->|Yes| DemoPause["manual_action_required"]
+  DemoPause --> DemoReview["Final review · submitRequests = 0"]
   Candidate --> CLI["Safety-first CLI"]
   CLI --> Workflow["Indeed workflow orchestrator"]
   Workflow --> Browser["Playwright BrowserManager"]
@@ -61,7 +67,7 @@ flowchart LR
   Gate -->|No| Review["Final review checkpoint"]
 ```
 
-> Local mode protects session and application files with restrictive filesystem permissions and Git exclusion. Remote mode encrypts session state on the client with AES-256-GCM before transfer. Application records remain local in this prototype.
+> The public API is a deliberately separate synthetic lane: it accepts only a known fixture job ID, stores no candidate data, expires records after 24 hours, and contains no employer-submission route. Live automation records remain private and local. Remote browser-session mode encrypts state on the client with AES-256-GCM before transfer.
 
 ## Repository layout
 
@@ -69,9 +75,11 @@ flowchart LR
 jobnova-takehome/
 ├── packages/
 │   ├── web/                    # React + Vite recommendation product
+│   │   ├── db/                 # D1 schema for expiring synthetic demo state
 │   │   ├── src/components/     # Reusable Figma-informed UI
 │   │   ├── src/data/           # Demo job fixtures
-│   │   └── src/lib/            # Explainable scoring and filtering
+│   │   ├── src/lib/            # Explainable scoring and API client
+│   │   └── worker/             # Same-origin synthetic workflow API
 │   └── automation/             # TypeScript + Playwright backend
 │       ├── data/               # Safe profile and bounded job-plan examples
 │       ├── src/browser/        # Browser lifecycle and session restore
@@ -84,6 +92,7 @@ jobnova-takehome/
 │       └── src/session-vault/  # Runnable ciphertext-only HTTPS service
 ├── .env.example
 ├── .gitignore
+├── CHANGELOG.md
 ├── CHALLENGE_AUDIT.md
 ├── README.md
 ├── SUBMISSION_CHECKLIST.md
@@ -157,6 +166,20 @@ The frontend implements:
 - mobile bottom navigation and full-width detail flow;
 - an explicit illustrative-data disclosure;
 - semantic controls, visible focus, keyboard-trapped dialogs, Escape/focus restoration, and reduced-motion support.
+
+### Connected safe workflow demo
+
+The public **Review application** panel is a real frontend/backend integration rather than a static mock. It creates a synthetic application through `POST /api/demo/applications`, advances persisted state with `POST /api/demo/applications/:id/advance`, and renders the returned event timeline. The state machine visibly moves through `pending`, `in_progress`, a simulated `manual_action_required` verification gate, resume, and final review.
+
+This integration is intentionally safer than connecting the public site to a private Indeed session:
+
+- only fixture job IDs are accepted;
+- no name, email, phone, resume, answers, credentials, cookies, or verification codes are sent;
+- records use UUIDs, carry `source: "public_demo"`, expire after 24 hours, and cannot be listed;
+- state changes are same-origin, bounded, and persisted in D1;
+- `submitRequests` is invariantly `0`, and no API route can contact an employer or submit an application.
+
+The private Playwright workflow remains a separate reviewer-verifiable module. This preserves the strongest full-stack evidence without turning a public portfolio link into a live application bot.
 
 ### Explainable recommendation score
 
@@ -447,7 +470,7 @@ The included vault already demonstrates tenant-bound credentials and per-user st
 4. Explain category scores, evidence, and visible gaps.
 5. Expand the recommendation receipt and show the profile, policy, job, and evidence IDs.
 6. Switch to a 390px viewport and show the mobile hierarchy.
-7. Open the local review-before-submit panel and point out that submission is disabled.
+7. Open the connected review-before-submit panel, advance to the manual gate, resume, and show `Submit requests: 0` at final review.
 8. Run `demo:seed`, `demo:status`, and `demo:session`; no browser or personal profile is involved.
 9. Run `demo:workflow`; explain that Chromium is real but every request is locally intercepted.
 10. Point out its four `PASS` checks, zero submit requests, and six persisted transitions.
@@ -466,7 +489,7 @@ See [`docs/DESIGN_DECISIONS.md`](./docs/DESIGN_DECISIONS.md) for the concise tra
 The repository is locally validated with:
 
 - frontend strict TypeScript;
-- frontend component and recommendation tests;
+- frontend component, recommendation, state-machine, and API-client tests;
 - desktop and 390×844 mobile Playwright E2E journeys with CI-uploaded screenshots;
 - frontend production build;
 - backend strict TypeScript;
@@ -479,7 +502,7 @@ The repository is locally validated with:
 - ESLint across both workspaces;
 - read-only CLI smoke checks (`profile:validate`, `status`).
 
-The current validation set contains 49 default unit/component tests, 3 browser-backed automation tests, and 2 frontend Playwright E2E journeys. The zero-risk synthetic path is the reproducible reviewer evidence. Separately, one candidate-controlled application to a relevant software-engineering internship was submitted on 2026-08-23 and reconciled into the ignored private runtime store only after confirmation on Indeed and in the candidate's email. Account details, resume data, application identifiers, and confirmation evidence are intentionally excluded from the repository and recording.
+The current validation set contains 54 default unit/component tests, 3 browser-backed automation tests, and 2 frontend Playwright E2E journeys. Both frontend E2E journeys exercise the connected safe-demo API, including persisted state and the manual-action boundary. The zero-risk synthetic path is the reproducible reviewer evidence. Separately, one candidate-controlled application to a relevant software-engineering internship was submitted on 2026-08-23 and reconciled into the ignored private runtime store only after confirmation on Indeed and in the candidate's email. Account details, resume data, application identifiers, and confirmation evidence are intentionally excluded from the repository and recording.
 
 ## Scope limitations
 

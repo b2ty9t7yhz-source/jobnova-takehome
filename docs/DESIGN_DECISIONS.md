@@ -11,6 +11,7 @@ This document is the short reviewer-oriented companion to the full README. It re
 | Where should browser-session encryption happen? | Encrypt with AES-256-GCM in the automation client before HTTPS transfer | The Session Vault stores ciphertext-only envelopes and never receives the plaintext cookies or encryption key. Authentication also detects tampering. | Use managed key rotation and durable object storage when multiple users or long-lived sessions are introduced. |
 | How should workflow progress be represented? | Explicit state machine plus atomic transition history | `pending`, `in_progress`, `manual_action_required`, `failed`, and `submitted` are inspectable and recoverable. The event trail makes pauses and failures explainable. | Move the same domain model to a transactional database and leased workers when concurrency is required. |
 | Should the demo submit an employer application? | Stop at a visible final-review checkpoint | Review is a meaningful product boundary and prevents a UI demonstration from causing an external side effect. Live submission requires separate, action-time candidate confirmation. | Preserve the same checkpoint even in production; add consent records and an idempotent submission command. |
+| How should the public frontend and backend be integrated? | Use a same-origin synthetic workflow API backed by D1 | A persisted vertical slice demonstrates API design, state transitions, recovery, and responsive UI without exposing a candidate profile or live browser session. Records expire after 24 hours and `submitRequests` stays at zero. | Add authenticated tenant ownership before storing any user-derived state; keep live provider sessions in an isolated encrypted service. |
 | How should multi-user support be added? | Keep the current domain modules; replace local adapters with tenant-scoped services | Browser, workflow, policy, storage, and observability are already separated. This avoids rewriting the safety logic while changing infrastructure. | Add tenant-scoped profiles, sessions, applications, event logs, queues, rate limits, retention, and access control. |
 
 ## Trust boundaries
@@ -20,7 +21,8 @@ This document is the short reviewer-oriented companion to the full README. It re
 | Candidate device ↔ Indeed | Profile fields, resume, answers, session cookies | Headed/manual verification, Indeed-host validation on every screen, exact-answer policy, bounded job plan |
 | Automation client ↔ Session Vault | Playwright storage state | HTTPS-only endpoint, client-side authenticated encryption, envelope-size limits, tenant-bound bearer token |
 | Local process ↔ filesystem | Application ledger, logs, failure screenshots | Atomic writes, owner-only permissions, Git exclusions, structured logs without profile values |
-| Public demo ↔ reviewer | Illustrative job and candidate evidence | Synthetic fixtures, visible disclosure, no employer submission control, no private backend connection |
+| Public demo ↔ synthetic D1 API | Fixture job ID and synthetic transition state | Same-origin writes, known-job allowlist, UUID lookup, 24-hour expiry, no list route, no PII fields, and no submission capability |
+| Public demo ↔ reviewer | Illustrative job and candidate evidence | Visible disclosure, connected synthetic timeline, zero-submit receipt, and no private automation connection |
 
 ## Failure policy
 

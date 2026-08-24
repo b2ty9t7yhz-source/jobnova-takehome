@@ -34,6 +34,13 @@ test("mobile discovery stays responsive through detail and review", async ({ pag
   await expect(page.getByRole("dialog", { name: "Review-before-submit workflow" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
+  await page.getByRole("button", { name: "Start safe demo" }).click();
+  await page.getByRole("button", { name: "Begin profile check" }).click();
+  await page.getByRole("button", { name: "Continue to verification gate" }).click();
+  await expect(page.getByText("Manual action required", { exact: true })).toBeVisible();
+  await expect(page.getByText(/does not solve a CAPTCHA/i)).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+
   await mkdir("artifacts/web-e2e", { recursive: true });
   await page.screenshot({
     path: "artifacts/web-e2e/mobile-review.png",

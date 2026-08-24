@@ -9,7 +9,7 @@ This audit was rebuilt from the supplied two-page challenge document. It separat
 | Implement the Figma job board and recommendation page | `packages/web/src/App.tsx`, component library, job/detail/match layouts, desktop Playwright E2E, [public demo](https://jobnova-jinhan-takehome.jessica2134.chatgpt.site) | Complete; visually compared with the supplied Figma and rechecked at 1440×1000 |
 | Finish within an estimated one day | Focused two-workspace vertical slice and 4–5 minute walkthrough | Design target supported; no unverifiable elapsed-time claim |
 | Make a responsive mobile H5 view without a supplied mobile design | Responsive CSS, `MobileNav`, mobile sheets, 390×844 Playwright list/detail/review journey | Complete; no horizontal overflow observed |
-| Add useful interactions where appropriate | Search, filters, shortlist persistence, detail view, review sheet, loading/empty states, `Cmd/Ctrl+K` | Complete |
+| Add useful interactions where appropriate | Search, filters, shortlist persistence, detail view, loading/empty states, `Cmd/Ctrl+K`, and a D1-backed safe workflow timeline | Complete; the public vertical slice reaches a manual gate and final review with zero submission capability |
 
 ## Backend
 
@@ -40,6 +40,7 @@ The document encourages AI-assisted coding; it does not require an LLM API. The 
 - Synthetic workflow roles reflect research software, reproducibility, data quality, and frontend quality rather than generic placeholder jobs.
 - Security choices are visible and testable: HTTPS-only remote storage, tenant-scoped ciphertext vault, encryption before transfer, tamper rejection, explicit revocation, strict live-profile preflight, bounded batch size, exact-answer policy, per-screen Indeed-host checks, and no silent submission.
 - The browser-backed fixture uses the production workflow, locally intercepts every request, verifies native and ARIA form controls, and proves that final review can be reached without a submit request.
+- The public UI and backend are connected through a synthetic-only Worker API with a D1 event record, a 24-hour TTL, an explicit manual-action pause, and no route capable of employer submission.
 
 ## Final actions outside the repository
 

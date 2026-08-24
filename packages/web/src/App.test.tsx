@@ -1,13 +1,16 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
+import { advanceDemoApplication, createDemoApplication } from "./demo-workflow";
 
 describe("JobNova recommendations", () => {
   beforeEach(() => {
     window.localStorage.clear();
     window.history.replaceState(null, "", "/");
   });
+
+  afterEach(() => vi.restoreAllMocks());
 
   it("searches recommendations and opens an explainable detail view", async () => {
     const user = userEvent.setup();
@@ -51,6 +54,42 @@ describe("JobNova recommendations", () => {
     expect(screen.queryByRole("button", { name: /submit/i })).not.toBeInTheDocument();
   });
 
+  it("runs the backend-driven safe demo through verification and final review", async () => {
+    const user = userEvent.setup();
+    let application = createDemoApplication({
+      id: "00000000-0000-4000-8000-000000000004",
+      jobId: "research-software-engineer",
+      role: "Research Software Engineer",
+      company: "Lattice Lab",
+      now: "2026-08-23T20:00:00.000Z",
+      expiresAt: "2026-08-24T20:00:00.000Z",
+    });
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+      if (String(input).endsWith("/advance")) {
+        application = advanceDemoApplication(application, "2026-08-23T20:00:01.000Z");
+      }
+      return Response.json({ application }, { status: 200 });
+    });
+
+    render(<App />);
+    await user.click(await screen.findByRole("button", { name: "View Research Software Engineer" }));
+    await user.click(screen.getByRole("button", { name: /Review application/i }));
+
+    await user.click(screen.getByRole("button", { name: "Start safe demo" }));
+    expect(await screen.findByText("Pending")).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Begin profile check" }));
+    expect(await screen.findByText("In progress")).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Continue to verification gate" }));
+    expect(await screen.findByText("Manual action required")).toBeVisible();
+    expect(screen.getByText(/does not solve a CAPTCHA/i)).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Acknowledge simulated verification" }));
+    expect(await screen.findByText("Final review reached")).toBeVisible();
+    expect(screen.getByText(/Submit requests:/)).toHaveTextContent("Submit requests: 0");
+  });
+
   it("traps keyboard focus in the review dialog and restores it when closed", async () => {
     const user = userEvent.setup();
     render(<App />);
@@ -62,7 +101,7 @@ describe("JobNova recommendations", () => {
     const closeButton = screen.getByRole("button", { name: "Close application preview" });
     expect(closeButton).toHaveFocus();
     await user.keyboard("{Shift>}{Tab}{/Shift}");
-    expect(screen.getByRole("button", { name: "Keep in review mode" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Start safe demo" })).toHaveFocus();
     await user.tab();
     expect(closeButton).toHaveFocus();
 

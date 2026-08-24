@@ -231,10 +231,6 @@ export default function App() {
         job={selectedJob}
         open={applicationReviewOpen}
         onClose={() => setApplicationReviewOpen(false)}
-        onAcknowledge={() => {
-          setApplicationReviewOpen(false);
-          setToast("Review checkpoint prepared — no application was sent");
-        }}
       />
     </div>
   );
